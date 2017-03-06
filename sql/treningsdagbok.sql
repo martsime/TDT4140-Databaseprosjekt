@@ -1,0 +1,161 @@
+CREATE TABLE Okt
+(
+	oktid      INTEGER(11) NOT NULL AUTO_INCREMENT,
+	tidspunkt  DATETIME,
+	varighet   INTEGER,
+	form       TINYINT(5) UNSIGNED,
+	prestasjon TINYINT(5) UNSIGNED,
+	notat      TEXT,
+	er_maal    BOOLEAN NOT NULL,
+	CHECK (form <= 10),
+	CHECK (prestasjon <= 10),
+	PRIMARY KEY (oktid)
+);
+
+CREATE TABLE Innendors
+(
+	oktid INTEGER(11) NOT NULL,
+	temp  TINYINT NOT NULL,
+	vær   CHAR(255) NOT NULL,
+	PRIMARY KEY (oktid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Utendors
+(
+	oktid        INTEGER(11) NOT NULL,
+	luftkvalitet INTEGER(5) NOT NULL,
+	tilskuere    INTEGER NOT NULL,
+	CHECK (luftkvalitet <= 10),
+	PRIMARY KEY (oktid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Mal
+(
+	oktid	INTEGER(11) NOT NULL,
+	navn	CHAR(50) NOT NULL,
+	PRIMARY KEY (oktid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Ovelse
+(
+	ovid		INTEGER(11) NOT NULL AUTO_INCREMENT,
+	navn		CHAR(50) NOT NULL,
+	beskrivelse TEXT NOT NULL,
+	PRIMARY KEY (ovid)
+);
+
+CREATE TABLE RelatertOvelse
+(
+	ovid1	INTEGER(11) NOT NULL,
+	ovid2	INTEGER(11) NOT NULL,
+	CHECK (ovid1 <> ovid2),
+	PRIMARY KEY (ovid1, ovid2),
+	FOREIGN KEY (ovid1) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE,
+	FOREIGN KEY (ovid2) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE StyrkeKondis
+(
+	ovid		INTEGER(11) NOT NULL,
+	belastning 	CHAR(50),
+	reps		INTEGER,
+	sett		INTEGER NOT NULL,
+	PRIMARY KEY (ovid),
+	FOREIGN KEY (ovid) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Utholdenhet
+(
+	ovid 		INTEGER(11) NOT NULL,
+	verdi		INTEGER NOT NULL,
+	is_lengde 	BOOLEAN NOT NULL,
+	PRIMARY KEY (ovid),
+	FOREIGN KEY (ovid) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Resultat
+(
+	oktid	INTEGER(11) NOT NULL,
+	ovid 	INTEGER(11) NOT NULL,
+	verdi	INTEGER NOT NULL,
+	PRIMARY KEY (oktid, ovid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE,
+	FOREIGN KEY (ovid) REFERENCES Utholdenhet(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Pulsgps
+(
+	oktid 		INTEGER(11) NOT NULL,
+	ovid 		INTEGER(11) NOT NULL,
+	sekvens 	INTEGER NOT NULL AUTO_INCREMENT,
+	tid 		DATETIME NOT NULL,
+	puls 		TINYINT(6) UNSIGNED NOT NULL,
+	lengdegrad 	FLOAT(23, 21) NOT NULL,
+	breddegrad 	FLOAT(23, 21) NOT NULL,
+	hoyde		INTEGER NOT NULL,
+	PRIMARY KEY (sekvens, oktid, ovid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE,
+	FOREIGN KEY (ovid) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE OvelseUtfort
+(
+	oktid	INTEGER(11) NOT NULL,
+	ovid 	INTEGER(11) NOT NULL,
+	PRIMARY KEY (oktid, ovid),
+	FOREIGN KEY (oktid) REFERENCES Okt(oktid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE,
+	FOREIGN KEY (ovid) REFERENCES Ovelse(ovid)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE
+);
+
+CREATE TABLE Kategori
+(
+	katid		INTEGER(11) NOT NULL AUTO_INCREMENT,
+	navn		CHAR(50) NOT NULL,
+	forelder	INTEGER(11) NULL,
+	PRIMARY KEY (katid),
+	FOREIGN KEY (forelder) REFERENCES Kategori(katid)
+		ON UPDATE CASCADE
+		ON DELETE SET NULL
+);
+
+CREATE TABLE OvelseKategori
+(
+	ovid 	INTEGER(11) NOT NULL,
+	katid	INTEGER(11) NOT NULL,
+	PRIMARY KEY (ovid, katid),
+	FOREIGN KEY (ovid) REFERENCES Ovelse(ovid)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	FOREIGN KEY (katid) REFERENCES Kategori(katid)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
