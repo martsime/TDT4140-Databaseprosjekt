@@ -3,9 +3,10 @@ package sample;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
-public class Controller {
+public class Controller implements PropertyChangeListener{
 
     DatabaseConnector databaseController;
 
