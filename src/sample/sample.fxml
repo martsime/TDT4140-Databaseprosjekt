@@ -40,7 +40,7 @@
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <DatePicker fx:id="datepick" HBox.hgrow="ALWAYS" />
+                  <DatePicker fx:id="dateField" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
             <HBox prefHeight="50.0" prefWidth="200.0">
@@ -53,14 +53,14 @@
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <ChoiceBox fx:id="time" />
+                  <ChoiceBox fx:id="hourField" />
                   <HBox HBox.hgrow="ALWAYS" />
                   <Label text="Minutt">
                      <padding>
                         <Insets left="10.0" right="10.0" top="5.0" />
                      </padding>
                   </Label>
-                  <ChoiceBox fx:id="minute">
+                  <ChoiceBox fx:id="minuteField">
                      <HBox.margin>
                         <Insets right="57.0" />
                      </HBox.margin></ChoiceBox>
@@ -77,7 +77,7 @@
                      </HBox.margin>
                   </Label>
                   <HBox HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="duration" maxWidth="155.0">
+                  <TextField fx:id="durationField" maxWidth="155.0">
                      <HBox.margin>
                         <Insets right="57.0" />
                      </HBox.margin></TextField>
@@ -91,7 +91,7 @@
                      </padding>
                   </Label>
                   <HBox HBox.hgrow="ALWAYS" />
-                  <Slider fx:id="shape" max="9.0" min="1.0" value="5.0" HBox.hgrow="ALWAYS">
+                  <Slider fx:id="fitnessField" max="9.0" min="1.0" value="5.0" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="50.0" />
                      </HBox.margin></Slider>
@@ -105,7 +105,7 @@
                      </padding>
                   </Label>
                   <Pane HBox.hgrow="ALWAYS" />
-                  <Slider fx:id="performance" max="9.0" min="1.0" value="5.0" HBox.hgrow="ALWAYS">
+                  <Slider fx:id="accomplishmentField" max="9.0" min="1.0" value="5.0" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="50.0" />
                      </HBox.margin></Slider>
@@ -116,13 +116,13 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </Label>
-            <TextArea fx:id="comment" maxWidth="243.0" prefHeight="100.0">
+            <TextArea fx:id="personalNoteField" maxWidth="243.0" prefHeight="100.0">
                <VBox.margin>
                   <Insets right="57.0" />
                </VBox.margin></TextArea>
             <HBox prefHeight="50.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" />
+                  <Button fx:id="cancelBtn" mnemonicParsing="false" text="Reset" />
                   <Button fx:id="addButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addSessionButtonClicked" text="Legg til">
                      <HBox.margin>
                         <Insets left="127.0" />
