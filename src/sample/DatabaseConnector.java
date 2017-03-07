@@ -1,6 +1,6 @@
 package sample;
 
-/**
+/*
  * Created by martsime on 28/02/2017.
  */
 
@@ -11,11 +11,11 @@ public class DatabaseConnector {
 
     private String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
-    private String DB_URL = "jdbc:mysql://localhost:3306/treningsdagbok";
+    private String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/martsime_databaseprosjekt";
 
     // Database credentials, login information.
     private final String USER = "martsime";
-    private final String PASS = "";
+    private final String PASS = "databaseprosjekt123";
 
     private Connection conn = null;
     private Statement stmt = null;
