@@ -1,12 +1,23 @@
 package sample;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +33,12 @@ public class Controller implements PropertyChangeListener {
     @FXML private Button cancelBtn;
     @FXML private Button addButton;
 
+    @FXML
     public void initialize(){
         initFrom();
-        initDuration();
         initWorkoutType();
         initPersonalFitness();
         initAccomplishment();
-
     }
 
     // Initialization methods:
@@ -42,26 +52,19 @@ public class Controller implements PropertyChangeListener {
     }
 
 
-    private void initDuration() {
-        for(int d = 0; d <= 300; d += 30){
-            if(d < 10 ? durationField.getItems().add("0"+d+" min") : durationField.getItems().add(String.valueOf(d+" min")));
-        }
-    }
-
-
+    // TODO: Fix
     private void initWorkoutType() {
-        typeField.getItems().addAll("Outside","Inside");
+        //typeField.getItems().addAll("Outside","Inside");
     }
 
     private void initPersonalFitness() {
-        for(int f = 1; f <= 10; f++){
-            fitnessField.getItems().add(f);
-        }
+        fitnessField.setMax(10);
+        fitnessField.setMin(1);
     }
+
     private void initAccomplishment() {
-        for(int a = 1; a <= 10; a++){
-            accomplishmentField.getItems().add(a);
-        }
+        accomplishmentField.setMax(10);
+        accomplishmentField.setMin(1);
     }
 
 
@@ -444,12 +447,6 @@ public class Controller implements PropertyChangeListener {
         //for(String name: result) {
         //    System.out.println(name);
         //}
-    }
-
-    @FXML
-    protected void initialize() {
-        time.getItems().addAll("00","01", "02", "03", "04", "05", "06");
-        minute.getItems().addAll("00","15", "30", "45");
     }
 
     @FXML
