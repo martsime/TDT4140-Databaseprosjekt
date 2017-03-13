@@ -32,6 +32,9 @@ public class Controller implements PropertyChangeListener {
     @FXML private TextArea personalNoteField;
     @FXML private Button cancelBtn;
     @FXML private Button addButton;
+    @FXML private ChoiceBox typeField;
+    // TODO: fix
+    @FXML private Workout workout;
 
     @FXML
     public void initialize(){
@@ -161,7 +164,7 @@ public class Controller implements PropertyChangeListener {
     }
 
     private void updateWorkoutDurationView() {
-        durationField.setValue(workout.getWorkoutDuration());
+        durationField.setText(workout.getWorkoutDuration());
     }
 
 
@@ -453,13 +456,13 @@ public class Controller implements PropertyChangeListener {
     private void addSessionButtonClicked() {
         
         System.out.println("Button clicked");
-        System.out.println(datepick.getValue());
-        System.out.println(time.getValue());
-        System.out.println(minute.getValue());
-        System.out.println(duration.getText());
-        System.out.println(shape.getValue());
-        System.out.println(performance.getValue());
-        System.out.println(comment.getText());
+        System.out.println(dateField.getValue());
+        System.out.println(hourField.getValue());
+        System.out.println(minuteField.getValue());
+        System.out.println(durationField.getText());
+        System.out.println(fitnessField.getValue());
+        System.out.println(accomplishmentField.getValue());
+        System.out.println(personalNoteField.getText());
 
     }
 
