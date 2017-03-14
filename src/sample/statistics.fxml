@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="450.0" maxWidth="900.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="statistics.Controller">
+    <top>
+        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="300.0" text="STATISTIKK">
+            <font>
+                <Font name="Raleway Bold" size="24.0" />
+            </font>
+
+            <BorderPane.margin>
+                <Insets left="300.0" right="300.0" top="20.0" />
+            </BorderPane.margin>
+        </Label>
+    </top>
+
+    <center>
+        <HBox maxWidth="700.0" prefHeight="200.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+            <VBox maxWidth="300" prefHeight="200" prefWidth="300">
+                <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="300" text="Totalt">
+                    <font>
+                        <Font name="Raleway Bold" size="20" />
+                    </font>
+
+                    <VBox.margin>
+                        <Insets bottom="20" top="20.0" />
+                    </VBox.margin>
+                </Label>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Antall økter" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label alignment="BASELINE_RIGHT" contentDisplay="RIGHT" text="Count TBD" prefWidth="150">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Total treningstid" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Total TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Gjennomsnittlig øktlengde" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Mean TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="50.0" prefWidth="300.0">
+                    <Label text="Lengste økt" prefWidth="100">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="duration TBD" contentDisplay="CENTER" prefWidth="100" alignment="BASELINE_CENTER">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="datetime TBD" contentDisplay="RIGHT" prefWidth="100" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox.margin>
+                    <Insets right="50.0" top="20.0" />
+                </HBox.margin>
+            </VBox>
+
+            <VBox maxWidth="300" prefHeight="200" prefWidth="300">
+                <Label alignment="CENTER" contentDisplay="CENTER" text="Beste styrkeøkt" prefWidth="300">
+                    <font>
+                        <Font name="Raleway Bold" size="20" />
+                    </font>
+
+                    <VBox.margin>
+                        <Insets bottom="20" top="20.0" />
+                    </VBox.margin>
+                </Label>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Starttidspunkt" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="datetime TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Antall øvelser" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="antall TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Prestasjon" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="prestasjon TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Dagsform" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="dagsform TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <Label text="Beste utholdenhetsøkt" alignment="CENTER" contentDisplay="CENTER" prefWidth="300">
+                    <font>
+                        <Font name="Raleway Bold" size="20" />
+                    </font>
+
+                    <VBox.margin>
+                        <Insets bottom="20" top="20.0" />
+                    </VBox.margin>
+                </Label>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Tidspunkt" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Tidspunkt TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Lengde" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Lengde TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Tid" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Tid TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox prefHeight="30.0" prefWidth="300.0">
+                    <Label text="Fart" prefWidth="150">
+                        <font>
+                            <Font name="Raleway Bold" size="14" />
+                        </font>
+                    </Label>
+                    <Label text="Fart TBD" contentDisplay="RIGHT" prefWidth="150" alignment="BASELINE_RIGHT">
+                        <font>
+                            <Font name="Raleway" size="14" />
+                        </font>
+                    </Label>
+                </HBox>
+
+                <HBox.margin>
+                    <Insets left="50.0" top="20.0" />
+                </HBox.margin>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>

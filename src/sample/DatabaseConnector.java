@@ -15,7 +15,7 @@ public class DatabaseConnector {
 
     // Database credentials, login information.
     private final String USER = "martsime";
-    private final String PASS = "databaseprosjekt123";
+    private final String PASS = "Orakelerbest123";
 
     private Connection conn = null;
     private Statement stmt = null;
@@ -26,7 +26,7 @@ public class DatabaseConnector {
 
     public void establishConnection() {
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName(JDBC_DRIVER).newInstance();
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
         } catch (SQLException se) {
             se.printStackTrace();

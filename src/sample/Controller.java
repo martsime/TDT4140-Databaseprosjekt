@@ -33,8 +33,6 @@ public class Controller implements PropertyChangeListener {
     @FXML private Button cancelBtn;
     @FXML private Button addButton;
     @FXML private ChoiceBox typeField;
-    // TODO: fix
-    @FXML private Workout workout;
 
     @FXML
     public void initialize(){
@@ -90,6 +88,7 @@ public class Controller implements PropertyChangeListener {
     void titleFieldFocusChange(ObservableValue<? extends Boolean> property, Boolean oldString, Boolean newString){
         if(!newString){
             try {
+                // TODO: Update title in database
                 updateWorkoutTitleModel();
             } catch (Exception e){
                 System.out.println("FEIL her: " + e);
@@ -120,6 +119,7 @@ public class Controller implements PropertyChangeListener {
         if(!newStartDate){
             System.out.println("focus1");
             try{
+                // TODO: Update date in database
                 updateDateModel();
             } catch(Exception e){
                 System.err.println(e);
@@ -129,21 +129,25 @@ public class Controller implements PropertyChangeListener {
 
     @FXML
     public void startHourChange(){
+        // TODO: Update starthour in database
         updateStartHourModel();
     }
 
     @FXML
     public void startMinChange(){
+        // TODO: Update startminute in database
         updateStartMinModel();
     }
 
     // View-updaters:
 
     private void updateWorkoutTitleView() {
+        // TODO: Wat
         workoutField.setText(Workout.getWorkoutTitle());
     }
 
 
+    // TODO: fix these
     private void updateWorkoutTypeView() {
         typeField.setValue(Workout.getWorkoutType());
     }
@@ -198,6 +202,7 @@ public class Controller implements PropertyChangeListener {
                 message += "Workout type not set\n";
             }
             else{
+                // TODO: Handle this
                 this.workout.setWorkoutType(typeField.getValue());
             }
 
@@ -207,15 +212,18 @@ public class Controller implements PropertyChangeListener {
                 message += "Workout date not set\n";
             }
             else {
+                // TODO: Handle this
                 this.workout.setDate(dateField.getValue());
             }
 	/* Validate and set start time (hour, min)*/
 	/* Validate and set duration*/
+	        // TODO: Fix this check
             if(durationField.getValue() == null){
                 state = false;
                 message += "Workout duration not set\n";
             }
             else {
+                // TODO: Handle this
                 this.workout.setDuration(durationField.getValue());
             }
 	/* Validate and set peronalFitness*/
@@ -226,6 +234,7 @@ public class Controller implements PropertyChangeListener {
                 message += "Workout fitness not set\n";
             }
             else {
+                // TODO: Handle this
                 this.workout.setPersonalFitness(fitnessField.getValue());
             }
 	/* Validate and set accomplishment*/
@@ -235,10 +244,12 @@ public class Controller implements PropertyChangeListener {
             }
             else {
                 //update model, with view values. REMEMBER TO ADD pcs.firePropertyChange in workout, and handling that event here under pcs connection
+                // TODO: Handle this
                 this.workout.setWorkoutAccomplishment(accomplishmentField.getValue());
             }
 	/* Validate and set personal note*/
             System.out.println("her er note:"+personalNoteField.getText());
+            // TODO: Handle this
             this.workout.setWorkoutNote(personalNoteField.getText());
 
 	/*Make new scene, and then set the scene*/
