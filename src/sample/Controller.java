@@ -72,7 +72,7 @@ class Controller {
     private int addSession(
             LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description
     ) throws SQLException {
-        String sql = "INSERT INTO Okt (tidspunkt, varighet, form, prestasjon, notat, er_maal) VALUES (?, ?, ?, ?, ?, NULL)";
+        String sql = "INSERT INTO Okt (tidspunkt, varighet, form, prestasjon, notat, er_maal) VALUES (?, ?, ?, ?, ?, FALSE)";
         PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         statement.setTimestamp(1, Timestamp.valueOf(startTime));
         statement.setInt(2, duration);
@@ -94,13 +94,13 @@ class Controller {
     }
 
 
-    void addInsideSession(
+    int addOutsideSession(
             LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description,
             Integer temperature, String weather
     ) throws SQLException {
         int oktid = addSession(startTime, duration, shape, performance, description);
 
-        String sql = "INSERT INTO Innendors (oktid, temp, vær) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Utendors (oktid, temp, vær) VALUES (?, ?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setInt(1, oktid);
         statement.setInt(2, temperature);
@@ -109,19 +109,20 @@ class Controller {
         int rowsInserted = statement.executeUpdate();
         if (rowsInserted > 0) {
             System.out.println("En ny innendørs økt ble lagret!");
+            return oktid;
         } else {
             throw new SQLException("Ingen innendørs økt ble lagret!");
         }
     }
 
 
-    void addOutsideSession(
+    int addInsideSession(
             LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description,
             Integer airQuality, Integer spectators
     ) throws SQLException {
         int oktid = addSession(startTime, duration, shape, performance, description);
 
-        String sql = "INSERT INTO Utendors (oktid, luftkvalitet, tilskuere) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Innendors (oktid, luftkvalitet, tilskuere) VALUES (?, ?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setInt(1, oktid);
         statement.setInt(2, airQuality);
@@ -130,6 +131,7 @@ class Controller {
         int rowsInserted = statement.executeUpdate();
         if (rowsInserted > 0) {
             System.out.println("En ny utendørs økt ble lagret!");
+            return oktid;
         } else {
             throw new SQLException("Ingen utendørs økt ble lagret!");
         }
@@ -181,11 +183,44 @@ class Controller {
     }
 
 
-    void addActivityToCategory(Integer activityID, Integer categoryID) throws SQLException {
+    private int getActivityByName(String name) throws SQLException {
+        String sql = "SELECT ovid FROM Ovelse WHERE navn=?";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setString(1, name);
+
+        final ResultSet resultSet = statement.executeQuery();
+        int ovid;
+        if (resultSet.next()) {
+            ovid = resultSet.getInt(1);
+            return ovid;
+        }
+        throw new SQLException("Det finnes ingen øvelse med dette navnet!");
+    }
+
+
+    private int getCategoryByName(String name) throws SQLException {
+        String sql = "SELECT katid FROM Kategori WHERE navn=?";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setString(1, name);
+
+        final ResultSet resultSet = statement.executeQuery();
+        int katid;
+        if (resultSet.next()) {
+            katid = resultSet.getInt(1);
+            return katid;
+        }
+        throw new SQLException("Det finnes ingen kategori med dette navnet!");
+    }
+
+
+    void addActivityToCategory(String activityName, String categoryName) throws SQLException {
+        int ovid = this.getActivityByName(activityName);
+        int katid = this.getCategoryByName(categoryName);
+
         String sql = "INSERT INTO OvelseKategori (ovid, katid) VALUES (?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
-        statement.setInt(1, activityID);
-        statement.setInt(2, categoryID);
+        statement.setInt(1, ovid);
+        statement.setInt(2, katid);
 
         int rowsInserted = statement.executeUpdate();
         if (rowsInserted > 0) {
@@ -196,10 +231,12 @@ class Controller {
     }
 
 
-    void addActivityToSession(Integer activityID, Integer sessionID) throws SQLException {
+    void addActivityToSession(String activityName, Integer sessionID) throws SQLException {
+        int ovid = getActivityByName(activityName);
+
         String sql = "INSERT INTO OvelseUtfort (oktid, ovid) VALUES (?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
-        statement.setInt(2, activityID);
+        statement.setInt(2, ovid);
         statement.setInt(1, sessionID);
 
         int rowsInserted = statement.executeUpdate();
@@ -212,13 +249,15 @@ class Controller {
 
 
     void addGpsToSession(
-            Integer activityID, Integer sessionID, LocalDateTime time, Integer pulse,
+            String activityName, Integer sessionID, LocalDateTime time, Integer pulse,
             Double latitude, Double longitude, Integer height
     ) throws SQLException {
+        int ovid = getActivityByName(activityName);
+
         String sql = "INSERT INTO Pulsgps (oktid, ovid, tid, puls, lengdegrad, breddegrad, hoyde) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setInt(1, sessionID);
-        statement.setInt(2, activityID);
+        statement.setInt(2, ovid);
         statement.setTimestamp(3, Timestamp.valueOf(time));
         statement.setInt(4, pulse);
         statement.setDouble(5, latitude);
@@ -249,11 +288,13 @@ class Controller {
     }
 
 
-    void addEnduranceResult(Integer sessionID, Integer activityID, Integer value) throws SQLException {
+    void addEnduranceResult(Integer sessionID, String activityName, Integer value) throws SQLException {
+        int ovid = this.getActivityByName(activityName);
+
         String sql = "INSERT INTO Resultat (oktid, ovid, verdi) VALUES (?, ?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setInt(1, sessionID);
-        statement.setInt(2, activityID);
+        statement.setInt(2, ovid);
         statement.setInt(3, value);
 
         int rowsInserted = statement.executeUpdate();
@@ -287,7 +328,7 @@ class Controller {
     void addEnduranceActivity(String name, String description, Integer value, boolean isDistance) throws SQLException {
         int ovid = addActivity(name, description);
 
-        String sql = "INSERT INTO Utholdenhet (ovid, verdi, is_lengde) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Utholdenhet (ovid, verdi, is_lengde) VALUES (?, ?, ?)";
         PreparedStatement statement = conn.prepareStatement(sql);
         statement.setInt(1, ovid);
         statement.setInt(2, value);
@@ -302,7 +343,7 @@ class Controller {
     }
 
     ArrayList<String> getAllSessionNotes() throws SQLException {
-        String sql = "SELECT beskrivelse FROM Ovelse";
+        String sql = "SELECT notat FROM Okt";
         PreparedStatement statement = conn.prepareStatement(sql);
 
         ResultSet commandResults = statement.executeQuery();
@@ -311,5 +352,24 @@ class Controller {
             results.add(commandResults.getString(1));
         }
         return results;
+    }
+
+    ResultSet getAllSessionActivities(int sessionID) throws SQLException {
+        String sql = "SELECT Ovelse.navn, Ovelse.beskrivelse FROM OvelseUtfort NATURAL JOIN Ovelse WHERE oktid=?";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, sessionID);
+
+        return statement.executeQuery();
+    }
+
+    ResultSet getAllGpsOfSessionActivity(int sessionID, String activityName) throws SQLException {
+        int ovid = this.getActivityByName(activityName);
+
+        String sql = "SELECT tid, puls, lengdegrad, breddegrad, hoyde FROM Pulsgps WHERE oktid=? AND ovid=? ORDER BY tid ASC";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, sessionID);
+        statement.setInt(2, ovid);
+
+        return statement.executeQuery();
     }
 }
