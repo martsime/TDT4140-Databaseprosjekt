@@ -1,103 +1,51 @@
 package sample;
 
-/**
- * Created by ellenbakksjo on 07.03.2017.
- */
-public abstract class Exercise {
+import java.util.Date;
 
-    protected int ovelsesID;
-    protected static String name;
-    protected static String description;
-    protected static String group;
-    protected static String goal;
+public class Exercise {
 
-    protected static int temp; //outdoor exercise
-    protected static String weather; //outdoor exercise
+    private int sets, reps, load, duration;
+    double distance ;
+    String name ;
+    Date training_session;
 
-    protected static String ventilation; //indoor exercise
-    protected static int spectators; //indoor exercise
-
-
-    public void setName(String name){
+    public Exercise(int sets, int reps, int load, double distance, int duration, String name, Date training_session) {
+        this.sets = sets;
+        this.reps = reps;
+        this.load = load;
+        this.duration = duration;
+        this.distance = distance;
         this.name = name;
+        this.training_session = training_session;
     }
 
-    public void setGroup(String group){
-        this.group = group;
+
+
+    public int getSets() {
+        return sets;
     }
 
-    public void setGoal(String goal){
-        this.goal = goal;
+    public int getReps() {
+        return reps;
     }
 
-    public void setDescription(String description){
-        this.description = description;
+    public int getLoad() {
+        return load;
     }
 
-    public void setOvelsesID(int id){
-        this.ovelsesID = id;
+    public double getDistance() {
+        return distance;
     }
 
-    public int getOvelsesID() {
-        return ovelsesID;
+    public int getDuration() {
+        return duration;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public static String getName() {
+    public String getName() {
         return name;
     }
 
-    public void setWeather(String weather) {
-        this.weather = weather;
+    public Date getTraining_session() {
+        return training_session;
     }
-
-    public void setTemp(int temp) {
-        this.temp = temp;
-    }
-
-    public void setSpectators(int spectators) {
-        this.spectators = spectators;
-    }
-
-    public void setVentilation(String ventilation) {
-        this.ventilation = ventilation;
-    }
-
-    public static String getWeather() {
-        return weather;
-    }
-
-    public static int getTemp() {
-        return temp;
-    }
-
-    public static String getVentilation() {
-        return ventilation;
-    }
-
-    public static int getSpectators() {
-        return spectators;
-    }
-
-    public static String getGroup(){
-        return group;
-    }
-
-    public static String getGoal(){
-        return goal;
-    }
-
-    public void setOutdoor(int temp, String weather){
-        this.temp = temp;
-        this.weather = weather;
-    }
-
-    public void setIndoor(String ventilation, int spectators){
-        this.ventilation = ventilation;
-        this.spectators = spectators;
-    }
-
 }

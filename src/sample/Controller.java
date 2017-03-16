@@ -1,485 +1,315 @@
 package sample;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.time.LocalDate;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
-public class Controller implements PropertyChangeListener {
+class Controller {
+    private Connection conn;
 
-    @FXML private DatePicker dateField;
-    @FXML private ChoiceBox hourField;
-    @FXML private ChoiceBox minuteField;
-    @FXML private TextField durationField;
-    @FXML private Slider fitnessField;
-    @FXML private Slider accomplishmentField;
-    @FXML private TextArea personalNoteField;
-    @FXML private Button cancelBtn;
-    @FXML private Button addButton;
-    @FXML private ChoiceBox typeField;
+    Controller() {
+        String dbURL = "jdbc:mysql://mysql.stud.ntnu.no:3306/martsime_databaseprosjekt";
+        String username = "martsime";
+        String password = "Orakelerbest123";
 
-    @FXML
-    public void initialize(){
-        initFrom();
-        initWorkoutType();
-        initPersonalFitness();
-        initAccomplishment();
-    }
-
-    // Initialization methods:
-    private void initFrom() {
-        for(int i = 7; i < 24; i++){
-            if(i < 10 ? hourField.getItems().add("0"+i) : hourField.getItems().add(String.valueOf(i)));
-        }
-        for(int j = 0; j < 60; j += 15){
-            if(j < 10 ? minuteField.getItems().add("0"+ j) : minuteField.getItems().add(String.valueOf(j)));
-        }
-    }
-
-
-    // TODO: Fix
-    private void initWorkoutType() {
-        //typeField.getItems().addAll("Outside","Inside");
-    }
-
-    private void initPersonalFitness() {
-        fitnessField.setMax(10);
-        fitnessField.setMin(1);
-    }
-
-    private void initAccomplishment() {
-        accomplishmentField.setMax(10);
-        accomplishmentField.setMin(1);
-    }
-
-
-    //	View-listeners:
-    @FXML
-    void titleFieldChange(ObservableValue<? extends String> property, String oldTitle, String newTitle){
-        validateTitleView(newTitle);
-    }
-    private void validateTitleView(String newTitle) {
-        if(newTitle.matches("[A-Za-z ]+")){
-        }
-        else{
-            //Do something with the fact that the workout title is invalid
-            //throw new IllegalStateException("Not valid workout title");
-            System.out.println("NOT VALID workoutTitle");
-        }
-    }
-
-    @FXML
-    void titleFieldFocusChange(ObservableValue<? extends Boolean> property, Boolean oldString, Boolean newString){
-        if(!newString){
-            try {
-                // TODO: Update title in database
-                updateWorkoutTitleModel();
-            } catch (Exception e){
-                System.out.println("FEIL her: " + e);
-
-            }
-        }
-    }
-
-    @FXML
-    public void dateFieldChange() {
-        validateDateView();
-    }
-
-    public void validateDateView(){
-        LocalDate today = LocalDate.now();
-        LocalDate choosen = dateField.getValue();
-        if(!choosen.isAfter(today) && !choosen.equals(today)){
-            //make some changes in the view, to notify user that not valid date.
-            System.out.println("wrong workout date");
-        }
-
-    }
-
-
-    @FXML
-    public void dateFieldFocusChange(ObservableValue<? extends Boolean> property, Boolean oldStartDate, Boolean newStartDate){
-        System.out.println("focus");
-        if(!newStartDate){
-            System.out.println("focus1");
-            try{
-                // TODO: Update date in database
-                updateDateModel();
-            } catch(Exception e){
-                System.err.println(e);
-            }
-        }
-    }
-
-    @FXML
-    public void startHourChange(){
-        // TODO: Update starthour in database
-        updateStartHourModel();
-    }
-
-    @FXML
-    public void startMinChange(){
-        // TODO: Update startminute in database
-        updateStartMinModel();
-    }
-
-    // View-updaters:
-
-    private void updateWorkoutTitleView() {
-        // TODO: Wat
-        workoutField.setText(Workout.getWorkoutTitle());
-    }
-
-
-    // TODO: fix these
-    private void updateWorkoutTypeView() {
-        typeField.setValue(Workout.getWorkoutType());
-    }
-
-
-    private void updateWorkoutDateView() {
-        dateField.setValue(workout.getWorkoutDate());
-    }
-
-
-    private void updateWorkoutNoteView() {
-        personalNoteField.setText(workout.getWorkoutNote());
-    }
-
-
-    private void updateWorkoutFitnessView() {
-        fitnessField.setValue(workout.getPersonalFitness());
-    }
-
-    private void updateWorkoutDurationView() {
-        durationField.setText(workout.getWorkoutDuration());
-    }
-
-
-    private void updateWorkoutAccomplishmentView() {
-        accomplishmentField.setValue(workout.getWorkoutAccomplishment());
-    }
-
-    private void updateWorkoutHourView(){
-        hourField.setValue(workout.getWorkoutHour());
-    }
-
-    private void updateWorkoutMinuteView(){
-        minuteField.setValue(workout.getWorkoutMinute());
-    }
-
-
-
-
-    //Scene handler:
-    @FXML
-    private void createBtnClicked(){
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        Parent scene;
-        Boolean state = true;
-        String message ="";
         try {
-            //DO all the validations that needs to be done before new scene. if not already done.  Remember comboboxes default value is null
-			/* Validate workoutType */
-            if(typeField.getValue() == null){
-                state = false;
-                message += "Workout type not set\n";
-            }
-            else{
-                // TODO: Handle this
-                this.workout.setWorkoutType(typeField.getValue());
-            }
 
-	/* Validate and set start date*/
-            if(dateField.getValue() == null){
-                state = false;
-                message += "Workout date not set\n";
-            }
-            else {
-                // TODO: Handle this
-                this.workout.setDate(dateField.getValue());
-            }
-	/* Validate and set start time (hour, min)*/
-	/* Validate and set duration*/
-	        // TODO: Fix this check
-            if(durationField.getValue() == null){
-                state = false;
-                message += "Workout duration not set\n";
-            }
-            else {
-                // TODO: Handle this
-                this.workout.setDuration(durationField.getValue());
-            }
-	/* Validate and set peronalFitness*/
-            if(fitnessField.getValue()== null){
-                //do some logic shit here, so that the modell dosent get set without a value
-                //don't let the button change scene before all values/ attributs are set!
-                state = false;
-                message += "Workout fitness not set\n";
-            }
-            else {
-                // TODO: Handle this
-                this.workout.setPersonalFitness(fitnessField.getValue());
-            }
-	/* Validate and set accomplishment*/
-            if(accomplishmentField.getValue()== null){
-                state = false;
-                message += "Workout accomplishment not set\n";
-            }
-            else {
-                //update model, with view values. REMEMBER TO ADD pcs.firePropertyChange in workout, and handling that event here under pcs connection
-                // TODO: Handle this
-                this.workout.setWorkoutAccomplishment(accomplishmentField.getValue());
-            }
-	/* Validate and set personal note*/
-            System.out.println("her er note:"+personalNoteField.getText());
-            // TODO: Handle this
-            this.workout.setWorkoutNote(personalNoteField.getText());
+            conn = DriverManager.getConnection(dbURL, username, password);
 
-	/*Make new scene, and then set the scene*/
-            if(state){
-                scene = (Parent) fxmlLoader.load(this.getClass().getResourceAsStream("ExercisesGUI.fxml"));
-                String time = workout.getWorkoutHour() + ":" + workout.getWorkoutMinute();
-
-//				System.out.println(Tabell.INSERT.TRENINGSØKT(workout.getWorkoutDate().toString(), time, workout.getWorkoutDurationTime(), workout.getPersonalFitness(), workout.getWorkoutAccomplishment(), workout.getWorkoutNote()));
-                Database.insert(Tabell.INSERT.TRENINGSØKT(workout.getWorkoutDate().toString(), time, workout.getWorkoutDurationTime(), workout.getPersonalFitness(), workout.getWorkoutAccomplishment(), workout.getWorkoutNote()));
-                Main.primaryStage.setScene(new Scene(scene));
+            if (conn != null) {
+                System.out.println("Connected");
             }
-            else {
-                message += "These needs to set, before new workout is valid";
-                Alertbox.display(message);
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
-    @FXML private TableView<List<String>> workoutList;
-
-    @FXML
-    private void loadWorkouts(Event event) {
-       // if (((Tab) event.getTarget()).isSelected()) {
-         //   workoutList.getSelectionModel().selectedItemProperty().removeListener(showOvelser);
-           // workoutList.getColumns().clear();
-            //workoutList.getItems().clear();
-            ArrayList<String> result = Database.select(Tabell.SELECT.TRENINGSØKT());
-            if (result.size() > 0) {
-                String[] firstSplit = result.get(0).split(",");
-                for (int i = 0; i < result.get(0).split(",").length; i ++) {
-                    final String kolonneNavn = firstSplit[i].split(";")[0];
-                    TableColumn<List<String>,String> kolonne = new TableColumn<>(kolonneNavn);
-                    final int colIndex = i;
-                    kolonne.setCellValueFactory(data -> {
-                        List<String> rowValues = data.getValue();
-                        String cellValue ;
-                        if (colIndex < rowValues.size()) {
-                            cellValue = rowValues.get(colIndex);
-                        } else {
-                            cellValue = "" ;
-                        }
-                        return new ReadOnlyStringWrapper(cellValue);
-                    });
-                    workoutList.getColumns().add(kolonne);
-                }
-                for (String row : result) {
-                    String[] split = row.split(",");
-                    ArrayList<String> verdier = new ArrayList<String>();
-                    for (int i = 0; i < split.length; i ++) {
-                        verdier.add(split[i].split(";")[1]);
-                    }
-                    workoutList.getItems().add(verdier);
-                }
-            }
-            workoutList.getSelectionModel().selectedItemProperty().addListener(showOvelser);
-        }
-   // }
-
-    private ChangeListener<List<String>> showOvelser = new ChangeListener<List<String>>() {
-
-        @Override
-        public void changed(ObservableValue<? extends List<String>> observable, List<String> oldValue, List<String> newValue) {
-
-            BorderPane root = new BorderPane();
-
-
-            VBox iBox = new VBox(10);
-            VBox uBox = new VBox(10);
-
-
-            String query1 = "SELECT Øvelse.*,"
-                    + " Innendørsøvelse.Luftventilasjon, Innendørsøvelse.AntallTilskuere"
-                    + ", Utholdenhet.LengdeKM, Utholdenhet.Minutter"
-                    + " FROM Øvelse INNER JOIN BestårAv ON Øvelse.ØvelsesID = BestårAv.ØvelsesID AND BestårAv.TreningsID = " + newValue.get(0)
-                    + " INNER JOIN Innendørsøvelse ON Øvelse.ØvelsesID = Innendørsøvelse.ØvelsesID"
-                    + " INNER JOIN Utholdenhet ON Øvelse.ØvelsesID = Utholdenhet.ØvelsesID"
-                    ;
-
-            String query2 = "SELECT Øvelse.*,"
-                    + " Innendørsøvelse.Luftventilasjon, Innendørsøvelse.AntallTilskuere"
-                    + ", StyrkeOgKondisjon.Belastning, StyrkeOgKondisjon.AntallRepetisjoner, StyrkeOgKondisjon.AntallSett"
-                    + " FROM Øvelse INNER JOIN BestårAv ON Øvelse.ØvelsesID = BestårAv.ØvelsesID AND BestårAv.TreningsID = " + newValue.get(0)
-                    + " INNER JOIN Innendørsøvelse ON Øvelse.ØvelsesID = Innendørsøvelse.ØvelsesID"
-                    + " INNER JOIN StyrkeOgKondisjon ON Øvelse.ØvelsesID = StyrkeOgKondisjon.ØvelsesID"
-                    ;
-
-            String query3 = "SELECT Øvelse.*,"
-                    + " Utendørsøvelse.Temperatur, Utendørsøvelse.Værtype"
-                    + ", Utholdenhet.LengdeKM, Utholdenhet.Minutter"
-                    + " FROM Øvelse INNER JOIN BestårAv ON Øvelse.ØvelsesID = BestårAv.ØvelsesID AND BestårAv.TreningsID = " + newValue.get(0)
-                    + " INNER JOIN Utendørsøvelse ON Øvelse.ØvelsesID = Utendørsøvelse.ØvelsesID"
-                    + " INNER JOIN Utholdenhet ON Øvelse.ØvelsesID = Utholdenhet.ØvelsesID"
-                    + " GROUP BY Øvelse.ØvelsesID"
-                    ;
-
-            String query4 = "SELECT Øvelse.*,"
-                    + " Utendørsøvelse.Temperatur, Utendørsøvelse.Værtype"
-                    + ", StyrkeOgKondisjon.Belastning, StyrkeOgKondisjon.AntallRepetisjoner, StyrkeOgKondisjon.AntallSett"
-                    + " FROM Øvelse INNER JOIN BestårAv ON Øvelse.ØvelsesID = BestårAv.ØvelsesID AND BestårAv.TreningsID = " + newValue.get(0)
-                    + " INNER JOIN Utendørsøvelse ON Øvelse.ØvelsesID = Utendørsøvelse.ØvelsesID"
-                    + " INNER JOIN StyrkeOgKondisjon ON Øvelse.ØvelsesID = StyrkeOgKondisjon.ØvelsesID"
-                    ;
-
-            TableView<List<String>> q1 = createView(Database.select(query1));
-            TableView<List<String>> q2 = createView(Database.select(query2));
-            TableView<List<String>> q3 = createView(Database.select(query3));
-            TableView<List<String>> q4 = createView(Database.select(query4));
-
-            if (q1 != null) {
-                root.setTop(new Label("Innendørsøvelser"));
-                iBox.getChildren().addAll(new Label("Utholdenhet"), q1);
-            }
-            if (q2 != null) {
-                root.setTop(new Label("Innendørsøvelser"));
-                iBox.getChildren().addAll(new Label("Styrke og kondisjon"), q2);
-            }
-            if (q3 != null) {
-                root.setTop(new Label("Utendørsøvelser"));
-                iBox.getChildren().addAll(new Label("Utholdenhet"), q3);
-            }
-            if (q4 != null) {
-                root.setTop(new Label("Utendørsøvelser"));
-                iBox.getChildren().addAll(new Label("Styrke og kondisjon"), q4);
-            }
-
-            if (q1 == null && q2 == null && q3 == null && q4 == null) {
-                root.setCenter(new Label("Denne treningsøkten inneholder ingen øvelser"));
-                BorderPane.setAlignment(root.getCenter(), Pos.CENTER);
-                root.getCenter().setStyle("-fx-font-weight: bold");
-                root.setMinHeight(200);
-                root.setMinWidth(400);
-            }
-            else {
-                root.setCenter(iBox);
-            }
-
-            if (root.getTop() != null) {
-                BorderPane.setAlignment(root.getTop(), Pos.CENTER);
-                root.getTop().setStyle("-fx-font-weight: bold");
-            }
-
-
-
-            Stage resultStage = new Stage();
-            Scene resultScene = new Scene(root);
-            resultStage.setTitle("Øvinger i treningen");
-            resultStage.setScene(resultScene);
-            resultStage.show();
-
-            resultStage.focusedProperty().addListener((e1, e2, e3) -> {
-                resultStage.close();
-            });
-        }
-    };
-
-    private TableView<List<String>> createView(List<String> values) {
-
-        if (values.size() == 0) {
-            return null;
+    void addCategory(String name, Integer parent) throws SQLException {
+        if (this.categoryExists(name)) {
+            throw new SQLException("Denne kategorien eksisterer allerede");
         }
 
-        TableView<List<String>> root = new TableView<List<String>>();
+        String sql = "INSERT INTO Kategori (navn, forelder) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
 
-        String[] firstSplit = values.get(0).split(",");
-        for (int i = 0; i < values.get(0).split(",").length; i ++) {
-
-            final String kolonneNavn = firstSplit[i].split(";")[0];
-            TableColumn<List<String>,String> kolonne = new TableColumn<>(kolonneNavn);
-            final int colIndex = i;
-
-            kolonne.setMinWidth(120);
-            kolonne.setMaxWidth(120);
-
-            kolonne.setCellValueFactory(data -> {
-                List<String> rowValues = data.getValue();
-                String cellValue;
-                if (colIndex < rowValues.size()) {
-                    cellValue = rowValues.get(colIndex);
-                }
-                else {
-                    cellValue = "" ;
-                }
-                return new ReadOnlyStringWrapper(cellValue);
-            });
-            root.getColumns().add(kolonne);
+        if (parent == null) {
+            statement.setString(1, name);
+            statement.setNull(2, Types.INTEGER);
+        } else {
+            statement.setString(1, name);
+            statement.setInt(2, parent);
         }
-        for (String row : values) {
-            String[] split = row.split(",");
-            ArrayList<String> verdier = new ArrayList<String>();
-            for (int i = 0; i < split.length; i ++) {
-                verdier.add(split[i].split(";")[1]);
-            }
-            root.getItems().add(verdier);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("En ny kategori ble laget!");
+        } else {
+            throw new SQLException("Kunne ikke lage kategori!");
         }
-        return root;
+
     }
 
 
+    private boolean queryForExistence(String sql, String name) throws SQLException {
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setString(1, name);
 
-
-    //-------------------------------------------
-
-    @FXML
-    private void buttonClicked() {
-        //ArrayList<String> result = databaseController.select(query.getText());
-        //for(String name: result) {
-        //    System.out.println(name);
-        //}
+        final ResultSet resultSet = statement.executeQuery();
+        int count = 0;
+        if (resultSet.next()) {
+            count = resultSet.getInt(1);
+        }
+        return count > 0;
     }
 
-    @FXML
-    private void addSessionButtonClicked() {
-        
-        System.out.println("Button clicked");
-        System.out.println(dateField.getValue());
-        System.out.println(hourField.getValue());
-        System.out.println(minuteField.getValue());
-        System.out.println(durationField.getText());
-        System.out.println(fitnessField.getValue());
-        System.out.println(accomplishmentField.getValue());
-        System.out.println(personalNoteField.getText());
 
+    boolean categoryExists(String name) throws SQLException {
+        String sql = "SELECT Count(*) FROM Kategori WHERE navn=?";
+        return queryForExistence(sql, name);
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
 
+    private int addSession(
+            LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description
+    ) throws SQLException {
+        String sql = "INSERT INTO Okt (tidspunkt, varighet, form, prestasjon, notat, er_maal) VALUES (?, ?, ?, ?, ?, NULL)";
+        PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setTimestamp(1, Timestamp.valueOf(startTime));
+        statement.setInt(2, duration);
+        statement.setInt(3, shape);
+        statement.setInt(4, performance);
+        statement.setString(5, description);
+
+        statement.executeUpdate();
+
+        int oktid;
+        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                oktid = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Ingen økt ble laget");
+            }
+        }
+        return oktid;
     }
 
+
+    void addInsideSession(
+            LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description,
+            Integer temperature, String weather
+    ) throws SQLException {
+        int oktid = addSession(startTime, duration, shape, performance, description);
+
+        String sql = "INSERT INTO Innendors (oktid, temp, vær) VALUES (?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, oktid);
+        statement.setInt(2, temperature);
+        statement.setString(3, weather);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("En ny innendørs økt ble lagret!");
+        } else {
+            throw new SQLException("Ingen innendørs økt ble lagret!");
+        }
+    }
+
+
+    void addOutsideSession(
+            LocalDateTime startTime, Integer duration, Integer shape, Integer performance, String description,
+            Integer airQuality, Integer spectators
+    ) throws SQLException {
+        int oktid = addSession(startTime, duration, shape, performance, description);
+
+        String sql = "INSERT INTO Utendors (oktid, luftkvalitet, tilskuere) VALUES (?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, oktid);
+        statement.setInt(2, airQuality);
+        statement.setInt(3, spectators);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("En ny utendørs økt ble lagret!");
+        } else {
+            throw new SQLException("Ingen utendørs økt ble lagret!");
+        }
+    }
+
+
+    void makeSessionTemplate(Integer sessionID, String name) throws SQLException {
+        String sql = "INSERT INTO Mal (oktid, navn) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, sessionID);
+        statement.setString(2, name);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Økten ble gjort til en mal!");
+        } else {
+            throw new SQLException("Økten kunne ikke gjøres til en mal!");
+        }
+    }
+
+
+    private int addActivity(String name, String description) throws SQLException {
+        if (this.activityExists(name)) {
+            throw new SQLException("Denne aktiviteten eksisterer allerede");
+        }
+
+        String sql = "INSERT INTO Ovelse (navn, beskrivelse) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, name);
+        statement.setString(2, description);
+
+        statement.executeUpdate();
+
+        int ovid;
+        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                ovid = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Ingen økt ble laget");
+            }
+        }
+        return ovid;
+    }
+
+
+    boolean activityExists(String name) throws SQLException {
+        String sql = "SELECT Count(*) FROM Ovelse WHERE navn=?";
+        return queryForExistence(sql, name);
+    }
+
+
+    void addActivityToCategory(Integer activityID, Integer categoryID) throws SQLException {
+        String sql = "INSERT INTO OvelseKategori (ovid, katid) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, activityID);
+        statement.setInt(2, categoryID);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Øvelsen ble satt inn i kategorien!");
+        } else {
+            throw new SQLException("Øvelsen kunne ikke settes inn i kategorien!");
+        }
+    }
+
+
+    void addActivityToSession(Integer activityID, Integer sessionID) throws SQLException {
+        String sql = "INSERT INTO OvelseUtfort (oktid, ovid) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(2, activityID);
+        statement.setInt(1, sessionID);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Øvelsen ble satt inn i økten!");
+        } else {
+            throw new SQLException("Øvelsen kunne ikke settes inn i økten!");
+        }
+    }
+
+
+    void addGpsToSession(
+            Integer activityID, Integer sessionID, LocalDateTime time, Integer pulse,
+            Double latitude, Double longitude, Integer height
+    ) throws SQLException {
+        String sql = "INSERT INTO Pulsgps (oktid, ovid, tid, puls, lengdegrad, breddegrad, hoyde) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, sessionID);
+        statement.setInt(2, activityID);
+        statement.setTimestamp(3, Timestamp.valueOf(time));
+        statement.setInt(4, pulse);
+        statement.setDouble(5, latitude);
+        statement.setDouble(6, longitude);
+        statement.setInt(7, height);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("GPS-koordinater registrert!");
+        } else {
+            throw new SQLException("GPS-koordinater kunne ikke registreres!");
+        }
+    }
+
+
+    void addActivityRelation(Integer activityID1, Integer activityID2) throws SQLException {
+        String sql = "INSERT INTO RelatertOvelse (ovid1, ovid2) VALUES (?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, activityID1);
+        statement.setInt(2, activityID2);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Relasjon mellom aktiviteter registrert!");
+        } else {
+            throw new SQLException("Relasjon mellom aktiviteter kunne ikke registreres!");
+        }
+    }
+
+
+    void addEnduranceResult(Integer sessionID, Integer activityID, Integer value) throws SQLException {
+        String sql = "INSERT INTO Resultat (oktid, ovid, verdi) VALUES (?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, sessionID);
+        statement.setInt(2, activityID);
+        statement.setInt(3, value);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Resultat av utholdenhetsøvelse registrert!");
+        } else {
+            throw new SQLException("Resultat av utholdenhetsøvelse kunne ikke registreres!");
+        }
+    }
+
+
+    void addStrengthOrConditionActivity(String name, String description, String load, Integer reps, Integer sets) throws SQLException {
+        int ovid = addActivity(name, description);
+
+        String sql = "INSERT INTO StyrkeKondis (ovid, belastning, reps, sett) VALUES (?, ?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, ovid);
+        statement.setString(2, load);
+        statement.setInt(3, reps);
+        statement.setInt(4, sets);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Styrke/kondisjonsøvelse registrert!");
+        } else {
+            throw new SQLException("Styrke/kondisjonsøvelse kunne ikke registreres!");
+        }
+    }
+
+
+    void addEnduranceActivity(String name, String description, Integer value, boolean isDistance) throws SQLException {
+        int ovid = addActivity(name, description);
+
+        String sql = "INSERT INTO Utholdenhet (ovid, verdi, is_lengde) VALUES (?, ?, ?, ?)";
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.setInt(1, ovid);
+        statement.setInt(2, value);
+        statement.setBoolean(3, isDistance);
+
+        int rowsInserted = statement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Utholdenhetsøvelse registrert!");
+        } else {
+            throw new SQLException("Utholdenhetsøvelse kunne ikke registreres!");
+        }
+    }
+
+    ArrayList<String> getAllSessionNotes() throws SQLException {
+        String sql = "SELECT beskrivelse FROM Ovelse";
+        PreparedStatement statement = conn.prepareStatement(sql);
+
+        ResultSet commandResults = statement.executeQuery();
+        ArrayList<String> results = new ArrayList<>();
+        while (commandResults.next()) {
+            results.add(commandResults.getString(1));
+        }
+        return results;
+    }
 }
