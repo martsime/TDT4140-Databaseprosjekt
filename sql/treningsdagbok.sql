@@ -12,7 +12,7 @@ CREATE TABLE Okt
 	PRIMARY KEY (oktid)
 );
 
-CREATE TABLE Innendors
+CREATE TABLE Utendors
 (
 	oktid INTEGER(11) NOT NULL,
 	temp  TINYINT NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE Innendors
 		ON DELETE CASCADE
 );
 
-CREATE TABLE Utendors
+CREATE TABLE Innendors
 (
 	oktid        INTEGER(11) NOT NULL,
 	luftkvalitet INTEGER(5) NOT NULL,
